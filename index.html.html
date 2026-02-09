@@ -739,68 +739,7 @@
         }
 
         // ARRIVÉE SUR PLACE
-        function arrivee(index) {
-            const s = sorties[index];
-            openModal(`
-                <h3>Arrivée sur place</h3>
-                <form onsubmit="validerArrivee(${index}); return false;">
-                    <div class="form-group">
-                        <label class="required">Heure d'arrivée</label>
-                        <input type="time" id="heureArrivee" value="${new Date().toTimeString().slice(0,5)}" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="required">KM intervention</label>
-                        <input type="number" id="kmIntervention" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Diagnostic</label>
-                        <input type="text" id="diagnostic">
-                    </div>
-                    <div class="form-group">
-                        <label class="required">Carte grise présente</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="cg" value="Oui" required> Oui</label>
-                            <label><input type="radio" name="cg" value="Non" required> Non</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="required">Véhicule non roulant</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="nr" value="Oui" required> Oui</label>
-                            <label><input type="radio" name="nr" value="Non" required> Non</label>
-                        </div>
-                    </div>
-                    <h4 style="margin:20px 0 10px 0; color:#000;">Photos obligatoires (5)</h4>
-                    <div class="photo-upload">
-                        <label class="photo-label required">📷 3/4 avant droit</label>
-                        <input type="file" id="photo1" accept="image/*" capture="environment" required>
-                    </div>
-                    <div class="photo-upload">
-                        <label class="photo-label required">📷 3/4 avant gauche</label>
-                        <input type="file" id="photo2" accept="image/*" capture="environment" required>
-                    </div>
-                    <div class="photo-upload">
-                        <label class="photo-label required">📷 3/4 arrière droit</label>
-                        <input type="file" id="photo3" accept="image/*" capture="environment" required>
-                    </div>
-                    <div class="photo-upload">
-                        <label class="photo-label required">📷 3/4 arrière gauche</label>
-                        <input type="file" id="photo4" accept="image/*" capture="environment" required>
-                    </div>
-                    <div class="photo-upload">
-                        <label class="photo-label required">📷 Compteur</label>
-                        <input type="file" id="photo5" accept="image/*" capture="environment" required>
-                    </div>
-                    <div class="photo-upload">
-                        <label class="photo-label">📷 Photos supplémentaires (optionnel)</label>
-                        <input type="file" id="photosSupp" accept="image/*" multiple capture="environment">
-                    </div>
-                    <button type="submit" class="submit-btn">Valider</button>
-                </form>
-            `);
-        }
-
-        function arrivee(index) {
+       function arrivee(index) {
   openModal(`
     <h3>Arrivée sur place</h3>
     <form id="formArrivee">
