@@ -800,34 +800,104 @@
             `);
         }
 
-        function validerArrivee(index) {
-            // Vérifier les 5 photos obligatoires
-            if (!document.getElementById('photo1').files.length ||
-                !document.getElementById('photo2').files.length ||
-                !document.getElementById('photo3').files.length ||
-                !document.getElementById('photo4').files.length ||
-                !document.getElementById('photo5').files.length) {
-                alert('Les 5 photos obligatoires sont requises');
-                return;
-            }
+        function arrivee(index) {
+  openModal(`
+    <h3>Arrivée sur place</h3>
+    <form id="formArrivee">
+      <div class="form-group">
+        <label class="required">Heure d'arrivée</label>
+        <input type="time" id="heureArrivee" value="${nowHHMM()}" required>
+      </div>
+      <div class="form-group">
+        <label class="required">KM intervention</label>
+        <input type="number" id="kmIntervention" required>
+      </div>
+      <div class="form-group">
+        <label>Diagnostic</label>
+        <input type="text" id="diagnostic">
+      </div>
 
-            sorties[index].heureArrivee = document.getElementById('heureArrivee').value;
-            sorties[index].kmIntervention = parseInt(document.getElementById('kmIntervention').value);
-            sorties[index].diagnostic = document.getElementById('diagnostic').value;
-            sorties[index].carteGrise = document.querySelector('input[name="cg"]:checked').value;
-            sorties[index].nonRoulant = document.querySelector('input[name="nr"]:checked').value;
-            
-            // Compter les photos mais ne pas les stocker (trop volumineux)
-            const nbPhotos = 5 + (document.getElementById('photosSupp').files.length || 0);
-            sorties[index].nbPhotos = nbPhotos;
-            sorties[index].photosValidees = true;
-            
-            console.log('📷 Photos validées:', nbPhotos);
-            
-            if (sauvegarderDonnees()) {
-                closeModal();
-                afficherEnCours();
-                alert('✅ Arrivée enregistrée\n📷 ' + nbPhotos + ' photos validées\n\n⚠️ Note: Les photos ne sont pas stockées dans l\'outil.\nPensez à les conserver sur votre smartphone.');
+      <div class="form-group">
+        <label class="required">Carte grise présente</label>
+        <div class="radio-group">
+          <label><input type="radio" name="cg" value="Oui" required> Oui</label>
+          <label><input type="radio" name="cg" value="Non" required> Non</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="required">Véhicule non roulant</label>
+        <div class="radio-group">
+          <label><input type="radio" name="nr" value="Oui" required> Oui</label>
+          <label><input type="radio" name="nr" value="Non" required> Non</label>
+        </div>
+      </div>
+
+      <hr style="margin:18px 0">
+
+      <h4 style="margin:0 0 10px 0;color:#000;">📸 Photos (hors appli)</h4>
+      <div class="help-text" style="margin-bottom:10px;">
+        Prenez les photos avec l’appareil photo du téléphone (elles restent dans la galerie).<br>
+        Ensuite, cochez la conformité ici.
+      </div>
+
+      <div class="form-group">
+        <label class="required">Checklist photos (5 obligatoires)</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+          <label><input type="checkbox" class="ph" value="AVD"> 3/4 avant droit</label>
+          <label><input type="checkbox" class="ph" value="AVG"> 3/4 avant gauche</label>
+          <label><input type="checkbox" class="ph" value="ARD"> 3/4 arrière droit</label>
+          <label><input type="checkbox" class="ph" value="ARG"> 3/4 arrière gauche</label>
+          <label><input type="checkbox" class="ph" value="COMPTEUR"> Compteur</label>
+        </div>
+        <div class="help-text" id="phCount">0/5 validées</div>
+      </div>
+
+      <div class="form-group">
+        <label>Photos supplémentaires (optionnel)</label>
+        <input type="number" id="photosSuppCount" min="0" value="0">
+        <div class="help-text">Indiquer combien de photos en plus ont été prises.</div>
+      </div>
+
+      <button type="submit" class="submit-btn">Valider</button>
+    </form>
+  `);
+
+  // compteur checklist
+  const updateCount = () => {
+    const checked = document.querySelectorAll('.ph:checked').length;
+    document.getElementById('phCount').textContent = `${checked}/5 validées`;
+  };
+  document.querySelectorAll('.ph').forEach(cb => cb.addEventListener('change', updateCount));
+  updateCount();
+
+  document.getElementById('formArrivee').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const checked = document.querySelectorAll('.ph:checked').length;
+    if (checked !== 5) {
+      alert('Les 5 photos obligatoires doivent être cochées (conformes).');
+      return;
+    }
+
+    sorties[index].heureArrivee = document.getElementById('heureArrivee').value;
+    sorties[index].kmIntervention = safeParseInt(document.getElementById('kmIntervention').value);
+    sorties[index].diagnostic = document.getElementById('diagnostic').value || null;
+    sorties[index].carteGrise = document.querySelector('input[name="cg"]:checked').value;
+    sorties[index].nonRoulant = document.querySelector('input[name="nr"]:checked').value;
+
+    const supp = parseInt(document.getElementById('photosSuppCount').value || '0', 10);
+    sorties[index].nbPhotos = 5 + (Number.isFinite(supp) ? supp : 0);
+    sorties[index].photosValidees = true;
+
+    if (sauvegarderDonnees()) {
+      closeModal();
+      afficherEnCours();
+      alert(`✅ Arrivée enregistrée\n📸 ${sorties[index].nbPhotos} photo(s) déclarée(s)`);
+    }
+  });
+}
+
             }
         }
 
